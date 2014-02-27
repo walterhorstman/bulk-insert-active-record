@@ -5,18 +5,17 @@ module BulkInsertActiveRecord
   def self.included(base)
     base.class_eval do
 
-      def self.bulk_insert(rows, columns = nil)
+      def self.bulk_insert(rows, column_names = self.column_names)
         fail('No connection with the database') unless self.connection.active?
 
-        inserter = Inserters::factory(self, columns: columns)
+        inserter = Inserters::factory(self)
         self.transaction do
           if inserter.nil?
-            self.insert_one_by_one(column_names, rows)
+            self.insert_one_by_one(rows, column_names)
           else
-            # only insert 1000 rows at once (TODO: make this configurable?)
-            rows.in_groups_of(1000, false) do |grouped_rows|
-              sql = inserter.process(rows)
+            inserter.get_sql(rows, column_names) do |sql|
               puts(sql)
+              # TODO: execute sql
             end
           end
         end
@@ -24,14 +23,18 @@ module BulkInsertActiveRecord
 
       private
 
-      def self.insert_one_by_one(column_names, rows)
+      def self.insert_one_by_one(rows, column_names)
         self.transaction do
-          rows.each do |column|
-            record = self.new
-            column_names.each_with_index do |column_name, index|
-              record[column_name] = column[index]
+          rows.each do |row|
+            if row.is_a?(self)
+              row.save
+            else
+              record = self.new
+              column_names.each_with_index do |column_name, index|
+                record[column_name] = row[index]
+              end
+              record.save
             end
-            record.save
           end
         end
       end

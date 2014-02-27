@@ -4,18 +4,12 @@ module BulkInsertActiveRecord
   module Inserters
     class Oracle < Base
 
-      def initialize(active_record_class, options = {})
-        super(active_record_class, {
-          separator: ' UNION ',
-          sql: 'INSERT INTO %{table_name}(%{columns_clause}) %{values_clause}'
-        }.merge(options))
+      def initialize(active_record_class)
+        @base_sql ||= 'INSERT INTO %{table_name}(%{columns_clause}) %{values_clause}'
+        @value_fragment_sql ||= 'SELECT %{value_clause} FROM dual'
+        @value_separator ||= ' UNION '
+        super(active_record_class)
       end
-
-      private
-
-      def value_clause(row)
-        ['SELECT ', row.map { |column| @active_record_class.quote_value(column) }.join(', '), ' FROM dual'].join
-      end
-    end
+   end
   end
 end
