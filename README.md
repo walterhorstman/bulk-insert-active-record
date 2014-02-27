@@ -1,0 +1,1 @@
+This repository is work in progress. It aims to be a very lightweight bulk insert solution.
