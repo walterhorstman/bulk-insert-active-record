@@ -3,28 +3,37 @@ module BulkInsertActiveRecord
   module Inserters
     class Base
 
-      def initialize(active_record_class)
+      def initialize(active_record_class, options = {})
         @active_record_class = active_record_class
-        # classes that inherit from this class might set the following instance variables in their
-        # constructor before calling this one
-        @base_sql ||= 'INSERT INTO %{table_name}(%{columns_clause}) VALUES %{values_clause}'
-        @value_sql ||= '(%{value_clause})'
-        @value_separator ||= ', '
+        # maximum number of records per generated sql statement
+        @bulk_size = options[:bulk_size] || 1000
+
+        # basic bulk insert statement
+        @statement = options[:statement] || 'INSERT INTO %{table_name}(%{columns_clause}) VALUES %{values_clause}'
+        # character(s) used to separate columns in the columns_clause of the statement
+        @column_separator = options[:column_separator] || ', '
+        # character(s) used to separate records in the values_clause of the statement
+        @record_separator = options[:record_separator] || ', '
+        # sql fragment for individual records in the values_clause of the statement
+        @record_statement = options[:record_statement] || '(%{value_clause})'
+        # character(s) used to separate values in the value_clause of the record statement
+        @value_separator = options[:value_separator] || ', '
       end
 
-      def get_sql(rows, column_names)
+      # generates bulk insert sql statements, one for each X number of re
+      def statements(records, column_names)
         substitutions = {}
         substitutions[:table_name] = @active_record_class.quoted_table_name
-        substitutions[:columns_clause] = column_names.map { |column_name| @active_record_class.connection.quote_column_name(column_name) }.join(', ')
+        substitutions[:columns_clause] = column_names.map { |column_name| @active_record_class.connection.quote_column_name(column_name) }.join(@column_separator)
 
-        # yield the bulk insert statement for each 1000 rows (TODO: make this configurable?)
-        rows.in_groups_of(1000, false) do |grouped_rows|
-          substitutions[:values_clause] = grouped_rows.map do |row|
-            @value_sql % {
-              value_clause: row.map { |column| @active_record_class.quote_value(column) }.join(', ')
+        # split the records in groups and yield back the generated sql
+        records.in_groups_of(@bulk_size, false) do |grouped_records|
+          substitutions[:values_clause] = grouped_records.map do |record|
+            @record_statement % {
+              value_clause: record.map { |column| @active_record_class.quote_value(column) }.join(@value_separator)
             }
-          end.join(@value_separator)
-          yield(@base_sql % substitutions)
+          end.join(@record_separator)
+          yield(@statement % substitutions)
         end
       end
     end
