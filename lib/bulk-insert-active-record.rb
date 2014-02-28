@@ -13,10 +13,9 @@ module BulkInsertActiveRecord
           if inserter.nil?
             self.insert_one_by_one(records, column_names)
           else
-            inserter.statements(records, column_names) do |sql|
-              puts(sql)
-              # TODO: execute sql
-            end
+            sql = inserter.statement(records, column_names)
+            puts(sql)
+            # self.connection.execute(sql)
           end
         end
       end

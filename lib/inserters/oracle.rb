@@ -11,6 +11,6 @@ module BulkInsertActiveRecord
           record_separator: ' UNION '
         }.merge(options))
       end
-   end
+    end
   end
 end
