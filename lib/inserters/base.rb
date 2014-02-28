@@ -3,8 +3,9 @@ module BulkInsertActiveRecord
   module Inserters
     class Base
 
-      def initialize(active_record_class, options = {})
-        @active_record_class = active_record_class
+      def initialize(active_record_class, table_name, options = {})
+        @connection = active_record_class.connection
+        @quoted_table_name = active_record_class.quoted_table_name
 
         # basic bulk insert statement
         @statement = options[:statement] || 'INSERT INTO %{table_name}(%{columns_clause}) VALUES %{values_clause}'
@@ -21,11 +22,11 @@ module BulkInsertActiveRecord
       # returns bulk insert statement
       def statement(records, column_names)
         @statement % {
-          table_name: @active_record_class.quoted_table_name,
-          columns_clause: column_names.map { |column_name| @active_record_class.connection.quote_column_name(column_name) }.join(@column_separator),
+          table_name: @quoted_table_name,
+          columns_clause: column_names.map { |column_name| @connection.quote_column_name(column_name) }.join(@column_separator),
           values_clause: records.map do |record|
             @record_statement % {
-              value_clause: record.map { |column| @active_record_class.quote_value(column) }.join(@value_separator)
+              value_clause: record.map { |value| @connection.quote(value) }.join(@value_separator)
             }
           end.join(@record_separator)
         }
