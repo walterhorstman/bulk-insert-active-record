@@ -3,7 +3,7 @@ module BulkInsertActiveRecord
   module Inserters
     class Base
 
-      def initialize(active_record_class, table_name, options = {})
+      def initialize(active_record_class, options = {})
         @connection = active_record_class.connection
         @quoted_table_name = active_record_class.quoted_table_name
 
