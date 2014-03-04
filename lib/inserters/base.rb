@@ -10,13 +10,13 @@ module BulkInsertActiveRecord
         # basic bulk insert statement
         @statement = options[:statement] || 'INSERT INTO %{table_name}(%{columns_clause}) VALUES %{values_clause}'
         # character(s) used to separate columns in the columns_clause of the statement
-        @column_separator = options[:column_separator] || ', '
+        @column_separator = options[:column_separator] || ','
         # character(s) used to separate records in the values_clause of the statement
-        @record_separator = options[:record_separator] || ', '
+        @record_separator = options[:record_separator] || ','
         # sql fragment for individual records in the values_clause of the statement
         @record_statement = options[:record_statement] || '(%{value_clause})'
         # character(s) used to separate values in the value_clause of the record statement
-        @value_separator = options[:value_separator] || ', '
+        @value_separator = options[:value_separator] || ','
       end
 
       # returns bulk insert statement

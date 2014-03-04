@@ -14,7 +14,7 @@ module BulkInsertActiveRecord
             self.insert_one_by_one(records, column_names)
           else
             sql = inserter.statement(records, column_names)
-            self.connection.execute(sql)
+            self.connection.insert(sql)
           end
         end
       end
