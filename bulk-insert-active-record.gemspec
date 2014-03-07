@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name                  = 'bulk-insert-active-record'
   spec.summary               = 'Lightweight bulk insert mechanism for ActiveRecord 3 or higher'
   spec.description           = 'This gem allows you to insert multiple rows as once, dramatically increasing performance.'
-  spec.version               = '0.0.1'
+  spec.version               = '0.0.2'
   spec.required_ruby_version = '>= 1.9.2'
 
   spec.author                = 'Walter Horstman'

@@ -22,17 +22,15 @@ module BulkInsertActiveRecord
       private
 
       def self.insert_one_by_one(records, column_names)
-        self.transaction do
-          records.each do |record|
-            if record.is_a?(self)
-              record.save
-            else
-              item = self.new
-              column_names.each_with_index do |column_name, index|
-                item[column_name] = record[index]
-              end
-              item.save
+        records.each do |record|
+          if record.is_a?(self)
+            record.save
+          else
+            item = self.new
+            column_names.each_with_index do |column_name, index|
+              item[column_name] = record[index]
             end
+            item.save
           end
         end
       end
