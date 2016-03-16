@@ -7,7 +7,7 @@ module BulkInsertActiveRecord
       inserter_class = case active_record_class.connection.adapter_name.downcase
                        when 'mssql', 'mysql', 'sqlserver' then Base
                        # FIXME: as soon as we know which SQL statement to use, enable the next line
-                       # when 'oracle' then Oracle
+                       when 'oracle' then Oracle
                        else nil
                        end
 
