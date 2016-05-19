@@ -1,6 +1,6 @@
-# This base implementation works for MySQL and SQLServer
 module BulkInsertActiveRecord
   module Inserters
+    # This base implementation works for MySQL and SQLServer
     class Base
 
       def initialize(active_record_class, options = {})
