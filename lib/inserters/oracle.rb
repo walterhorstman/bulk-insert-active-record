@@ -1,16 +1,17 @@
-require_relative('sequenced')
-
 module BulkInsertActiveRecord
   module Inserters
-    class Oracle < Sequenced
-
-      def initialize(active_record_class, options = {})
-        super(active_record_class, options.reverse_merge(
-          statement: 'INSERT INTO %{table_name}(%{columns_clause}) %{values_clause}',
-          record_statement: 'SELECT %{value_clause} FROM dual',
-          sequence_statement: "#{active_record_class.sequence_name}.NEXTVAL",
-          record_separator: ' UNION '
-        ))
+    # Implementation specific for Oracle
+    class Oracle < Base
+      def execute(records, column_names) # override
+        statement = 'BEGIN INSERT INTO %{table_name}(%{columns_clause}) VALUES(%{values_clause}); END;'
+        @connection.execute(format(statement, table_name: @quoted_table_name,
+                                              columns_clause: column_names.map do |column_name|
+                                                @connection.quote_column_name(column_name)
+                                              end.join(','),
+                                              values_clause: records.map do |record|
+                                                value_clause = record.map { |value| @connection.quote(value) }.join(',')
+                                                "SELECT #{value_clause} FROM dual"
+                                              end.join(' UNION ')))
       end
     end
   end
