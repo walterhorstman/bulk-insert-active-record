@@ -6,7 +6,7 @@ performance.
 ## Current status
 
 This gem is currently actively in development, but because it's already useful, I've decided to publish it in its
-premature state. Right now it has been manually tested with MySQL and SQL Server via JDBC.
+premature state. Right now it has been manually tested with MySQL, SQL Server and Oracle via JDBC.
 
 ## Usage
 
