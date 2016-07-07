@@ -3,7 +3,7 @@ module BulkInsertActiveRecord
     # Implementation specific for Oracle
     class Oracle < Base
       def execute(records, column_names) # override
-        statement = 'BEGIN INSERT INTO %{table_name}(%{columns_clause}) VALUES(%{values_clause}); END;'
+        statement = 'BEGIN INSERT INTO %{table_name}(%{columns_clause}) (%{values_clause}); END;'
         @connection.execute(format(statement, table_name: @quoted_table_name,
                                               columns_clause: column_names.map do |column_name|
                                                 @connection.quote_column_name(column_name)
