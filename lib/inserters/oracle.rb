@@ -1,3 +1,5 @@
+require_relative './base'
+
 module BulkInsertActiveRecord
   module Inserters
     # Implementation specific for Oracle
