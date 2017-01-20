@@ -5,7 +5,7 @@ module BulkInsertActiveRecord
   module Inserters
     def self.factory(active_record_class)
       inserter_class = case active_record_class.connection.adapter_name.downcase
-                       when 'mssql', 'mysql', 'sqlserver' then Base
+                       when 'mssql', 'mysql', 'mysql2', 'sqlserver' then Base
                        when 'oracle' then Oracle
                        end
 
