@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'bulk-insert-active-record'
-  spec.version       = '0.0.5'
+  spec.version       = '0.0.6'
   spec.author        = ['Walter Horstman']
   spec.email         = ['walter.horstman@itonrails.com']
 
